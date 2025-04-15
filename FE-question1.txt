@@ -1,0 +1,23 @@
+1. useCallback ใช้ทําอะไร
+
+        useCallback เป็น hook ของ react ใช้ memoize function โดยมี dependencies กำกับ
+
+        const memoizedFunc = useCallback(() => {
+            //logic
+        }, [dependency1, dependency2]);
+
+        เช่น 
+
+        const [callSaveDraft, { loading }] = useSaveDraftMutation()
+        
+        const [name,setName] = useState("")
+        
+        const saveDraft = useCallback(()=>{
+            callSaveDraft({
+                variables:{
+                    name,
+                }
+            })
+        },[name, callSaveDraft])   
+
+       saveDraft จะไม่ถูก re-render ใหม่ถ้า name ,callSaveDraft ไม่ถูกเปลี่ยน

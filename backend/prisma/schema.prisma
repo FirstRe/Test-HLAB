@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+// Product for main data
+model Product {
+  id           String                @id @default(uuid())
+  year         String?              @db.VarChar(4)
+  createdAt    DateTime             @default(now())
+  createdBy String
+  products ProductMultilingual[]
+}
+
+// ProductMultilingual for Multilingual Name or something else
+model ProductMultilingual {
+  id          String   @id @default(uuid())
+  language    String
+  name        String @unique
+  description String
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  createdAt    DateTime             @default(now())
+}

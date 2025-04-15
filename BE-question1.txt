@@ -1,0 +1,33 @@
+Assuming the system currently has three microservices: Customer API, Master Data API,
+and Transaction Data API, there is a new feature that requires data from all three
+microservices to be displayed in near real-time. The current technology stack includes
+REST APIs and an RDBMS database. How would you design a new API for this feature?
+
+
+                        --------------------------
+                        |        Frontend        |
+                        --------------------------
+                                    |
+                                    v
+                        ---------------------------
+                        |      Aggregator API     |  <== Request Client
+                        ---------------------------
+                                    |
+                             (ดึงข้อมูล cache) 
+                                    |
+                        ---------------------------
+                        |   Aggregator Redis/Cache   |  <== Cache Data
+                        ---------------------------
+                                    ^
+                                    | time * update
+               ---------------- cron job --------------------
+               |                    |                       |
+               |                    |                       |
+   --------------------   -------------------    -----------------------
+   | Customer Sync Job|   | Master Sync Job |    | Transaction Sync Job|
+   --------------------   -------------------    -----------------------
+               |                    |                       |
+               v                    v                       v
+   -------------------    -------------------    -----------------------
+   |  Customer API   |    | Master Data API |    | Transaction Data API|
+   -------------------    -------------------    -----------------------

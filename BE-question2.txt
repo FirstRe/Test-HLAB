@@ -1,0 +1,15 @@
+Assuming the team has started planning a new project, the project manager asks you for a
+performance test strategy plan for this release. How would you recommend proceeding to
+the project manager?
+
+- ความต้องการของระบบ Business Requirements
+    จำนวนผู้ใช้, response time, จุดที่ต้องรองรับโหลดสูง
+
+- เป้าหมายการทดสอบ Objectives
+    ทดสอบรองรับผู้ใช้งานใช้งานพร้อมกัน, หาจุดคอขวดของระบบ, 
+
+- Kpis
+    response time < 2s, CPU/Memory usage
+
+- Tools
+    k6, Grafana, script, add performance test in CI/CD Pipeline

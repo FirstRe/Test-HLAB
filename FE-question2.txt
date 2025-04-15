@@ -1,0 +1,95 @@
+2. Write a unit test for the UserProfile React component using Jest and React Testing
+Library.
+import React, { useState, useEffect } from 'react';
+const UserProfile = ({ userId }) => {
+const [user, setUser] = useState(null);
+const [error, setError] = useState('');
+useEffect(() => {
+const fetchData = async () => {
+try {
+const response = await
+fetch(`https://api.example.com/users/${userId}`);
+if (!response.ok) {
+throw new Error('Failed to fetch user data');
+}
+const userData = await response.json();
+setUser(userData);
+} catch (err) {
+setError(err.message);
+}
+};
+fetchData();
+}, [userId]);
+if (error) {
+return <div>Error: {error}</div>;
+}
+if (!user) {
+return <div>Loading...</div>;
+}
+return (
+<div>
+<h1>{user.name}</h1>
+<p>Email: {user.email}</p>
+</div>
+);
+};
+
+export default UserProfile;
+
+//Answer
+
+import UserProfile from "@/app/UserProfile";
+import { render, waitFor } from "@testing-library/react";
+
+const mockFetch = jest.fn();
+
+describe("test UserProfile", () => {
+  beforeEach(() => {
+    global.fetch = mockFetch;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("display loading", () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ name: "NAME1", email: "NAME1@gmail.com" }),
+      })
+    ) as jest.Mock;
+
+    const renderer = render(<UserProfile userId="1" />);
+    expect(renderer.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  test("display User data", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () =>
+          Promise.resolve({ name: "NAME1", email: "NAME1@gmail.com" }),
+      })
+    ) as jest.Mock;
+
+    const renderer = render(<UserProfile userId="1" />);
+
+    await waitFor(() => {
+      expect(renderer.getByText("NAME1")).toBeInTheDocument();
+      expect(renderer.getByText("NAME1@gmail.com")).toBeInTheDocument();
+    });
+  });
+
+  test("displays error when fetch got error", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => new Error("Failed to fetch data"),
+      })
+    ) as jest.Mock;
+
+    const renderer = render(<UserProfile userId="1" />);
+
+    await waitFor(() => {
+      expect(renderer.getByText("Failed to fetch data")).toBeInTheDocument();
+    });
+  });
+});
